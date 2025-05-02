@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLACKCODE CORPORATION</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary-color: #ff6600;
+            --primary-hover: #ff8533;
+            --bg-dark: #131313;
+            --bg-darker: #0a0a0a;
+            --bg-card: #1a1a1a;
+            --text-color: #f4f4f4;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-darker);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header Styling */
+        header {
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 102, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 40%;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .logo:hover::after {
+            width: 100%;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 5px 0;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--primary-color);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* Main Content Styling */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin: 50px 0;
+            align-items: start;
+        }
+
+        .menu {
+            background-color: var(--bg-card);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .menu h2 {
+            margin-bottom: 15px;
+            font-size: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .menu h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background-color: var(--primary-color);
+        }
+
+        .video-section {
+            background-color: var(--bg-card);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .video-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Driver Button Styling */
+        .driver-button-container {
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .driver-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 40px;
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            z-index: 1;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(255, 102, 0, 0.2);
+        }
+
+        .driver-button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 102, 0, 0.2), transparent);
+            transition: left 0.7s ease;
+            z-index: -1;
+        }
+
+        .driver-button:hover:before {
+            left: 100%;
+        }
+
+        .driver-button:hover {
+            background-color: var(--primary-color);
+            color: #000;
+            box-shadow: 0 5px 20px rgba(255, 102, 0, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .driver-button .btn-text {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Games Grid Styling */
+        .games-section {
+            margin: 50px 0;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .game-card {
+            background-color: var(--bg-card);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 25px 20px;
+            text-align: center;
+            border-top: 3px solid var(--primary-color);
+            height: 100%;
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-card h3 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 30px;
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            border-radius: 50px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            z-index: 1;
+            width: 100%;
+            margin: 5px 0;
+        }
+
+        .download-btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+            z-index: -1;
+        }
+
+        .download-btn:hover:before {
+            width: 100%;
+        }
+
+        .download-btn:hover {
+            color: #000;
+            box-shadow: 0 5px 15px rgba(255, 102, 0, 0.3);
+        }
+
+        .download-btn .btn-text {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .download-icon {
+            font-size: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .download-btn:hover .download-icon {
+            transform: translateY(3px);
+        }
+
+        /* Particles Background */
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Animation Keyframes */
+        @keyframes textGlow {
+            0%, 100% { text-shadow: 0 0 5px rgba(255, 102, 0, 0.5); }
+            50% { text-shadow: 0 0 15px rgba(255, 102, 0, 0.8); }
+        }
+
+        @keyframes buttonPulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 102, 0, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(255, 102, 0, 0.6); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .games-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            nav ul {
+                gap: 15px;
+            }
+            
+            .download-links {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            nav ul {
+                gap: 10px;
+            }
+            
+            .logo {
+                font-size: 22px;
+            }
+            
+            nav a {
+                font-size: 14px;
+            }
+            
+            .game-card {
+                padding: 20px 15px;
+            }
+            
+            .download-btn {
+                padding: 8px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">BLACKCODE</div>
+                <nav>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Downloads</a></li>
+                        <li><a href="#">Produtos</a></li>
+                        <li><a href="#">Suporte</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="menu">
+                <h2>DOWNLOADS DOS</h2>
+                <h2>PRODUTOS</h2>
+                <p>Acesse nosso catálogo completo de ferramentas e recursos para aprimorar sua experiência.</p>
+            </div>
+
+            <div class="video-section">
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/vgiOKx9_X8k" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+
+        <div class="driver-button-container">
+            <a href="#" class="driver-button">
+                <span class="btn-text">drivers install</span>
+            </a>
+        </div>
+
+        <div class="games-section">
+            <div class="games-grid">
+                <div class="game-card">
+                    <h3>Free Fire External</h3>
+                    <a href="https://cdn.discordapp.com/attachments/1243354768961699952/1367757887350374431/EXTERNAL_FREE_FIRE_V2.0.exe?ex=6815bf4c&is=68146dcc&hm=4e1bce3033c027eab370ec20c1c693bde0010f619be90a3267aec968a147b8e0&" class="download-btn">
+                        <span class="btn-text">
+                            download
+                            <span class="download-icon">↓</span>
+                        </span>
+                    </a>
+                </div>
+                
+                <div class="game-card">
+                    <h3>Bloodstrike External</h3>
+                    <div class="download-links" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                        <a href="https://cdn.discordapp.com/attachments/1350463893125861406/1363693076152979648/msodbc.msi?ex=68157625&is=681424a5&hm=aa973fbb409388ce3bf505ff70966e0b02e48b60d6450bebcee42b9f8f484421&" class="download-btn">
+                            <span class="btn-text">
+                                download Driver
+                                <span class="download-icon">↓</span>
+                            </span>
+                        </a>
+                        <a href="https://youtu.be/H3KLoRL175I" class="download-btn" style="background-color: rgba(255, 0, 0, 0.1);">
+                            <span class="btn-text">
+                                Tutorial
+                                <span class="download-icon">▶</span>
+                            </span>
+                        </a>
+                        <a href="https://cdn.discordapp.com/attachments/1350463893125861406/1365176528660336671/f.exe?ex=681595b8&is=68144438&hm=e4519465d4fe1e88999ed39f566ab6e9d6fd4eec6280dcd0434bfa4282245aa6&" class="download-btn">
+                            <span class="btn-text">
+                                download Hack
+                                <span class="download-icon">↓</span>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="game-card">
+                    <h3>Valorant External</h3>
+                    <div class="download-links" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                        <a href="https://cdn.discordapp.com/attachments/1222675856917266483/1358929227574939822/Steam_1.zip?ex=681544f7&is=6813f377&hm=ab1c68fc5c9bbefc5a1872709702fc00edf955c1c57e0d6ea7761346ca78588e&" class="download-btn">
+                            <span class="btn-text">
+                                download Steam
+                                <span class="download-icon">↓</span>
+                            </span>
+                        </a>
+                        <a href="https://cdn.discordapp.com/attachments/1360526217928904827/1362124113828905010/spoof.rar?ex=6815afaf&is=68145e2f&hm=1abd9a4d539d29c650f84c57be93e4c5f62c684ff89b82d930710f12b7ed9944&" class="download-btn">
+                            <span class="btn-text">
+                                download Spoof
+                                <span class="download-icon">↓</span>
+                            </span>
+                        </a>
+                        <a href="https://www.razer.com/br-pt/synapse-4" class="download-btn" style="background-color: rgba(0, 255, 0, 0.1);">
+                            <span class="btn-text">
+                                Razer Synapse
+                                <span class="download-icon">↓</span>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Particles.js for background effects -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            particlesJS("particles-js", {
+                "particles": {
+                    "number": {
+                        "value": 50,
+                        "density": {
+                            "enable": true,
+                            "value_area": 1000
+                        }
+                    },
+                    "color": {
+                        "value": "#ff6600"
+                    },
+                    "shape": {
+                        "type": "circle",
+                        "stroke": {
+                            "width": 0,
+                            "color": "#000000"
+                        },
+                    },
+                    "opacity": {
+                        "value": 0.2,
+                        "random": true,
+                        "anim": {
+                            "enable": true,
+                            "speed": 1,
+                            "opacity_min": 0.05,
+                            "sync": false
+                        }
+                    },
+                    "size": {
+                        "value": 1.5,
+                        "random": true,
+                        "anim": {
+                            "enable": true,
+                            "speed": 2,
+                            "size_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "line_linked": {
+                        "enable": true,
+                        "distance": 150,
+                        "color": "#ff6600",
+                        "opacity": 0.2,
+                        "width": 1
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 1,
+                        "direction": "none",
+                        "random": true,
+                        "straight": false,
+                        "out_mode": "out",
+                        "bounce": false,
+                    }
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": {
+                        "onhover": {
+                            "enable": true,
+                            "mode": "grab"
+                        },
+                        "onclick": {
+                            "enable": false
+                        },
+                        "resize": true
+                    },
+                    "modes": {
+                        "grab": {
+                            "distance": 140,
+                            "line_linked": {
+                                "opacity": 0.5
+                            }
+                        }
+                    }
+                },
+                "retina_detect": true
+            });
+
+            // Animation for buttons
+            const animateButtons = () => {
+                const buttons = document.querySelectorAll('.driver-button');
+                buttons.forEach(button => {
+                    button.style.animation = 'buttonPulse 2s infinite';
+                });
+            };
+            
+            // Animation for logos and titles
+            const animateTexts = () => {
+                const logo = document.querySelector('.logo');
+                const gameCards = document.querySelectorAll('.game-card h3');
+                
+                logo.style.animation = 'textGlow 3s infinite';
+                
+                gameCards.forEach(card => {
+                    card.style.animation = 'textGlow 3s infinite';
+                });
+            };
+            
+            // Call animations
+            setTimeout(() => {
+                animateButtons();
+                animateTexts();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
