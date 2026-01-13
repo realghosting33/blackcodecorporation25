@@ -1,138 +1,387 @@
 -- ============================================
--- Skin Changer System
--- Versão: 1.0
+-- SKIN CHANGER - VERSÃO FUNCIONAL
+-- Baseado no método que realmente funciona!
 -- ============================================
 
-local SkinChanger = {}
-SkinChanger.Version = "1.0"
-SkinChanger.Enabled = false
+print("╔════════════════════════════════════════╗")
+print("║    COUNTER BLOX SKIN CHANGER v2.0     ║")
+print("║    Sistema de troca direta de models  ║")
+print("╚════════════════════════════════════════╝")
 
--- Serviços
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
+if game.PlaceId ~= 301549746 then
+    warn("[Skin Changer] Este script é apenas para Counter Blox!")
+    return
+end
 
--- Player Local
-local LocalPlayer = Players.LocalPlayer
+-- ============================================
+-- DATABASE DE FACAS
+-- ============================================
 
--- Módulos de Skins
-local WeaponSkins = require(script.WeaponSkins)
-local KnifeSkins = require(script.KnifeSkins)
-local GloveSkins = require(script.GloveSkins)
-
--- Configurações
-SkinChanger.Config = {
-    SelectedSkins = {
-        Rifles = {},
-        SMGs = {},
-        Snipers = {},
-        Pistols = {},
-        Heavy = {},
-        Knives = {},
-        Gloves = {}
+local KnifeDatabase = {
+    SKELETON = {
+        Name = "Skeleton Knife",
+        AssetID = "7161149241",
+        ModelName = "v_skeletonknife"
+    },
+    KARAMBIT = {
+        Name = "Karambit",
+        AssetID = "7161230940",
+        ModelName = "v_karambit"
+    },
+    BUTTERFLY = {
+        Name = "Butterfly Knife",
+        AssetID = "7161230940",
+        ModelName = "v_butterfly"
+    },
+    BAYONET = {
+        Name = "Bayonet",
+        AssetID = "7311308040",
+        ModelName = "v_bayonet"
+    },
+    HUNTSMAN = {
+        Name = "Huntsman Knife",
+        AssetID = "7161142540",
+        ModelName = "v_huntsman"
+    },
+    FALCHION = {
+        Name = "Falchion Knife",
+        AssetID = "7161142540",
+        ModelName = "v_falchion"
+    },
+    GUT = {
+        Name = "Gut Knife",
+        AssetID = "7161142540",
+        ModelName = "v_gut"
+    },
+    DAGGERS = {
+        Name = "Shadow Daggers",
+        AssetID = "7161082619",
+        ModelName = "v_daggers"
+    },
+    BOW = {
+        Name = "Bow",
+        AssetID = "7161240289",
+        ModelName = "v_bow"
+    },
+    TALON = {
+        Name = "Talon Knife",
+        AssetID = "6669716399",
+        ModelName = "v_talon"
+    },
+    CLASSIC = {
+        Name = "Classic Knife",
+        AssetID = "7161142540",
+        ModelName = "v_classic"
     }
 }
 
 -- ============================================
--- Funções Core
+-- SISTEMA DE APLICAÇÃO DE SKIN
 -- ============================================
 
-function SkinChanger:Init()
-    print("[Skin Changer] Inicializando...")
-    
-    -- Hook no MetaTable
-    self:SetupHooks()
-    
-    -- Criar UI
-    self:CreateUI()
-    
-    print("[Skin Changer] Inicializado com sucesso!")
-end
+local SkinChanger = {}
+SkinChanger.Version = "2.0"
+SkinChanger.CurrentKnife = "DEFAULT"
 
-function SkinChanger:SetupHooks()
-    local mt = getrawmetatable(game)
-    local oldNamecall = mt.__namecall
-    setreadonly(mt, false)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Viewmodels = ReplicatedStorage:WaitForChild("Viewmodels")
+
+-- Função para aplicar faca (igual seu código que funciona!)
+function SkinChanger:ApplyKnife(knifeName)
+    knifeName = knifeName:upper()
     
-    local isUnlocked = false
+    local knifeData = KnifeDatabase[knifeName]
+    if not knifeData then
+        warn("[Skin Changer] ✗ Faca não encontrada: " .. knifeName)
+        return false
+    end
     
-    mt.__namecall = newcclosure(function(self, ...)
-        local args = {...}
-        local method = getnamecallmethod()
+    local success, err = pcall(function()
+        -- PASSO 1: Destruir facas existentes
+        local ctKnife = Viewmodels:FindFirstChild("v_CT Knife")
+        local tKnife = Viewmodels:FindFirstChild("v_T Knife")
         
-        -- Bloquear Hugh
-        if method == "InvokeServer" and tostring(self) == "Hugh" then
-            return
+        if ctKnife then
+            ctKnife:Destroy()
+            print("[Skin Changer] ✓ CT Knife removida")
         end
         
-        -- Unlock de Skins
-        if method == "FireServer" then
-            if args[1] == LocalPlayer.UserId then
-                return
-            end
-            
-            if string.len(tostring(self)) == 38 then
-                if not isUnlocked then
-                    isUnlocked = true
-                    
-                    -- Adicionar todas as skins
-                    for _, skinData in pairs(WeaponSkins:GetAllSkins()) do
-                        local doSkip = false
-                        for _, v2 in pairs(args[1]) do
-                            if skinData[1] == v2[1] then
-                                doSkip = true
-                            end
-                        end
-                        if not doSkip then
-                            table.insert(args[1], skinData)
-                        end
-                    end
-                end
-                return
-            end
-            
-            -- Aplicar Skin
-            if tostring(self) == "DataEvent" and args[1][4] then
-                local currentSkin = string.split(args[1][4][1], "_")[2]
-                if args[1][2] == "Both" then
-                    LocalPlayer.SkinFolder.CTFolder[args[1][3]].Value = currentSkin
-                    LocalPlayer.SkinFolder.TFolder[args[1][3]].Value = currentSkin
-                else
-                    LocalPlayer.SkinFolder[args[1][2] .. "Folder"][args[1][3]].Value = currentSkin
-                end
-            end
+        if tKnife then
+            tKnife:Destroy()
+            print("[Skin Changer] ✓ T Knife removida")
         end
         
-        return oldNamecall(self, ...)
+        wait(0.1)
+        
+        -- PASSO 2: Carregar modelo CT
+        print("[Skin Changer] Carregando modelo CT...")
+        local Model1 = Instance.new("Model", Viewmodels)
+        game:GetObjects('rbxassetid://' .. knifeData.AssetID)[1].Parent = Model1
+        
+        local LoadedModel = Viewmodels:FindFirstChild("Model")
+        if LoadedModel then
+            for _, Child in pairs(LoadedModel:GetChildren()) do
+                Child.Parent = LoadedModel.Parent
+            end
+            LoadedModel:Destroy()
+        end
+        
+        wait(0.1)
+        
+        -- PASSO 3: Carregar modelo T
+        print("[Skin Changer] Carregando modelo T...")
+        local Model2 = Instance.new("Model", Viewmodels)
+        game:GetObjects('rbxassetid://' .. knifeData.AssetID)[1].Parent = Model2
+        
+        LoadedModel = Viewmodels:FindFirstChild("Model")
+        if LoadedModel then
+            for _, Child in pairs(LoadedModel:GetChildren()) do
+                Child.Parent = LoadedModel.Parent
+            end
+            LoadedModel:Destroy()
+        end
+        
+        wait(0.1)
+        
+        -- PASSO 4: Renomear modelos
+        print("[Skin Changer] Renomeando modelos...")
+        local knife1 = Viewmodels:FindFirstChild(knifeData.ModelName)
+        if knife1 then
+            knife1.Name = "v_CT Knife"
+            print("[Skin Changer] ✓ CT Knife criada")
+        end
+        
+        local knife2 = Viewmodels:FindFirstChild(knifeData.ModelName)
+        if knife2 then
+            knife2.Name = "v_T Knife"
+            print("[Skin Changer] ✓ T Knife criada")
+        end
+        
+        self.CurrentKnife = knifeName
+        print("[Skin Changer] ✓✓✓ Faca aplicada com sucesso: " .. knifeData.Name)
     end)
     
-    setreadonly(mt, true)
+    if not success then
+        warn("[Skin Changer] ✗ Erro ao aplicar faca: " .. tostring(err))
+        return false
+    end
+    
+    return true
 end
 
-function SkinChanger:ApplySkin(weaponType, skinName)
-    if not self.Enabled then return end
+-- ============================================
+-- COMANDOS DO CONSOLE
+-- ============================================
+
+function SkinChanger:CreateCommands()
+    -- Comando principal
+    getgenv().changeKnife = function(knifeName)
+        return SkinChanger:ApplyKnife(knifeName)
+    end
     
-    local weaponClass = string.upper(weaponType)
+    -- Listar facas disponíveis
+    getgenv().listKnives = function()
+        print("╔════════════════════════════════════════╗")
+        print("║       FACAS DISPONÍVEIS                ║")
+        print("╚════════════════════════════════════════╝")
+        local i = 1
+        for key, data in pairs(KnifeDatabase) do
+            print(string.format("%2d. %-15s -> changeKnife('%s')", i, data.Name, key))
+            i = i + 1
+        end
+        print("\nExemplo: changeKnife('SKELETON')")
+    end
     
-    -- Aplicar skin baseado no tipo
-    if WeaponSkins:HasWeapon(weaponClass) then
-        WeaponSkins:ApplySkin(weaponClass, skinName)
-    elseif KnifeSkins:IsKnife(weaponClass) then
-        KnifeSkins:ApplySkin(skinName)
-    elseif GloveSkins:IsGlove(weaponClass) then
-        GloveSkins:ApplySkin(skinName)
+    -- Status
+    getgenv().knifeStatus = function()
+        print("╔════════════════════════════════════════╗")
+        print("║         SKIN CHANGER STATUS            ║")
+        print("╚════════════════════════════════════════╝")
+        print("Versão: " .. SkinChanger.Version)
+        print("Faca atual: " .. SkinChanger.CurrentKnife)
+        print("\nComandos disponíveis:")
+        print("  • listKnives() - Ver facas")
+        print("  • changeKnife('NOME') - Trocar faca")
+        print("  • knifeStatus() - Ver este menu")
+    end
+    
+    -- Resetar para padrão
+    getgenv().resetKnife = function()
+        local success = pcall(function()
+            local ctKnife = Viewmodels:FindFirstChild("v_CT Knife")
+            local tKnife = Viewmodels:FindFirstChild("v_T Knife")
+            
+            if ctKnife then ctKnife:Destroy() end
+            if tKnife then tKnife:Destroy() end
+            
+            -- Recarregar página forçará o jogo a carregar as facas padrão
+            print("[Skin Changer] ✓ Facas resetadas! Reequipe sua faca.")
+            SkinChanger.CurrentKnife = "DEFAULT"
+        end)
+        
+        return success
+    end
+    
+    print("[Skin Changer] ✓ Comandos criados com sucesso!")
+end
+
+-- ============================================
+-- INTERFACE VISUAL SIMPLES
+-- ============================================
+
+function SkinChanger:CreateUI()
+    local success = pcall(function()
+        local Players = game:GetService("Players")
+        local LocalPlayer = Players.LocalPlayer
+        
+        -- Criar ScreenGui
+        local screenGui = Instance.new("ScreenGui")
+        screenGui.Name = "SkinChangerUI"
+        screenGui.ResetOnSpawn = false
+        screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+        
+        if gethui then
+            screenGui.Parent = gethui()
+        else
+            screenGui.Parent = game.CoreGui
+        end
+        
+        -- Frame principal
+        local mainFrame = Instance.new("Frame")
+        mainFrame.Name = "MainFrame"
+        mainFrame.Size = UDim2.new(0, 300, 0, 400)
+        mainFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
+        mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+        mainFrame.BorderSizePixel = 0
+        mainFrame.Visible = false
+        mainFrame.Parent = screenGui
+        
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(0, 8)
+        corner.Parent = mainFrame
+        
+        -- Título
+        local title = Instance.new("TextLabel")
+        title.Size = UDim2.new(1, 0, 0, 40)
+        title.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+        title.BorderSizePixel = 0
+        title.Text = "SKIN CHANGER v" .. self.Version
+        title.TextColor3 = Color3.fromRGB(255, 255, 255)
+        title.Font = Enum.Font.GothamBold
+        title.TextSize = 16
+        title.Parent = mainFrame
+        
+        local titleCorner = Instance.new("UICorner")
+        titleCorner.CornerRadius = UDim.new(0, 8)
+        titleCorner.Parent = title
+        
+        -- ScrollFrame
+        local scrollFrame = Instance.new("ScrollingFrame")
+        scrollFrame.Size = UDim2.new(1, -20, 1, -60)
+        scrollFrame.Position = UDim2.new(0, 10, 0, 50)
+        scrollFrame.BackgroundTransparency = 1
+        scrollFrame.BorderSizePixel = 0
+        scrollFrame.ScrollBarThickness = 4
+        scrollFrame.Parent = mainFrame
+        
+        local listLayout = Instance.new("UIListLayout")
+        listLayout.Padding = UDim.new(0, 5)
+        listLayout.SortOrder = Enum.SortOrder.Name
+        listLayout.Parent = scrollFrame
+        
+        -- Criar botões para cada faca
+        for key, data in pairs(KnifeDatabase) do
+            local button = Instance.new("TextButton")
+            button.Size = UDim2.new(1, -10, 0, 35)
+            button.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+            button.BorderSizePixel = 0
+            button.Text = data.Name
+            button.TextColor3 = Color3.fromRGB(255, 255, 255)
+            button.Font = Enum.Font.Gotham
+            button.TextSize = 14
+            button.Parent = scrollFrame
+            
+            local btnCorner = Instance.new("UICorner")
+            btnCorner.CornerRadius = UDim.new(0, 4)
+            btnCorner.Parent = button
+            
+            button.MouseButton1Click:Connect(function()
+                self:ApplyKnife(key)
+                button.BackgroundColor3 = Color3.fromRGB(67, 181, 129)
+                wait(0.3)
+                button.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+            end)
+        end
+        
+        -- Ajustar tamanho do scroll
+        listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            scrollFrame.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 10)
+        end)
+        
+        -- Toggle com INSERT
+        game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+            if not gameProcessed and input.KeyCode == Enum.KeyCode.Insert then
+                mainFrame.Visible = not mainFrame.Visible
+            end
+        end)
+        
+        print("[Skin Changer] ✓ UI criada! Pressione INSERT para abrir")
+    end)
+    
+    if not success then
+        warn("[Skin Changer] ⚠ Não foi possível criar UI, use comandos do console")
     end
 end
 
-function SkinChanger:CreateUI()
-    -- UI será criada no próximo arquivo
-    require(script.UI):Create(self)
+-- ============================================
+-- NOTIFICAÇÃO
+-- ============================================
+
+function SkinChanger:Notify(text)
+    pcall(function()
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Skin Changer",
+            Text = text,
+            Duration = 3
+        })
+    end)
 end
 
 -- ============================================
--- Inicializar
+-- INICIALIZAÇÃO
 -- ============================================
 
+function SkinChanger:Init()
+    print("[Skin Changer] Inicializando sistema...")
+    
+    -- Verificar se Viewmodels existe
+    if not Viewmodels then
+        warn("[Skin Changer] ✗ Viewmodels não encontrado!")
+        return
+    end
+    
+    -- Criar comandos
+    self:CreateCommands()
+    
+    -- Criar UI
+    task.wait(0.5)
+    self:CreateUI()
+    
+    -- Notificar
+    self:Notify("Carregado! Pressione INSERT ou use listKnives()")
+    
+    print("╔════════════════════════════════════════╗")
+    print("║  ✓✓✓ SISTEMA CARREGADO COM SUCESSO    ║")
+    print("║                                        ║")
+    print("║  Pressione INSERT para abrir UI       ║")
+    print("║  ou use: listKnives()                 ║")
+    print("╚════════════════════════════════════════╝")
+end
+
+-- Executar
 SkinChanger:Init()
+
+-- Exportar
+getgenv().SkinChanger = SkinChanger
 
 return SkinChanger
